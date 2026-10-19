@@ -23,11 +23,18 @@ Source: upstream `18.2.1.9-developers-only`, commit `3c25009d615ffd37a3544ddc32b
 | Raw runtime disk | Failed: UTM reported `drive0, #block500: Invalid argument` during first boot |
 | QCOW2 replacements | Both `qemu-img check` passed; raw-disk error not reproduced on QCOW2 cold boots |
 | Installed guest protections | Gateway reports AppArmor enabled; whonix-firewall and security-misc packages present; no OpenSSH server or QEMU guest agent installed |
-| Signed package updates through Tor | Both normal updaters reached signed repositories; installation verification in progress |
+| Signed package updates through Tor | Passed on both guests using Install Updates in persistent SYSMAINT mode: 52 upgraded, 9 newly installed, 0 removed, 0 held back; each updater exited 0 |
+| Clean guest shutdown after updates | Passed on both guests via the maintenance panel |
+| Installed UTM policy and permissions | Both plists match the hardening transformer; bundle/Data 0700 and QCOW2 disks 0600 |
+| Runtime Internet socket ownership during updates | External TCP connections belonged only to Gateway QEMU; none appeared on Workstation QEMU |
 | Gateway Tor connection | HTTPS check.torproject.org API returned `IsTor: true` |
 | Warm reboot | One Gateway warm reboot did not recover the desktop or network; cold start reached sysmaint successfully. Unresolved reliability limitation |
 | Stable Tor Browser on Linux ARM64 | Blocked: stable download metadata returned HTTP 404; alpha metadata offered 16.0a14 |
-| Workstation networking | Correct internal-only eth0 address (10.152.152.11/18); signed repository downloads through Tor succeeded after cold-starting the pair. Full egress/failure tests pending |
+| Workstation networking | Correct internal-only eth0 address (10.152.152.11/18); signed repository downloads through Tor succeeded after cold-starting the pair |
+| Post-update normal cold boot | Both graphical desktops reached successfully |
+| Workstation Tor HTTPS smoke test | Passed: check.torproject.org API returned `IsTor: true` after signed updates |
+| Gateway-off HTTPS smoke test | The same Workstation curl request failed with exit 6, could not resolve host, after Gateway shutdown; no QEMU Internet sockets appeared in host lsof |
+| Comprehensive leak/failure testing | Pending: direct-IP TCP/UDP, DNS, IPv6, Tor-service failure, and adversarial tests are not established by the HTTPS smoke checks |
 | Independent security audit | Not performed |
 
 The transport test used blank disposable disks, not Whonix. Starting firmware and establishing a host socket does not demonstrate guest anonymity, traffic forwarding, or a functioning Workstation. Test VMs were stopped and removed after the check.
