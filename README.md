@@ -30,6 +30,8 @@ limactl shell whonix-builder -- bash -lc 'bash "$HOME/build-whonix.sh"'
 
 The supplied Lima configuration has no host mounts, SSH agent forwarding, container runtime, or automatic guest-service port forwarding. Its dated Debian image and SHA-512 digest are pinned. The image URL may eventually be retired; update the URL and independently verified digest together. The builder has direct network access for downloads and is separate from the Whonix runtime VMs.
 
+See [runtime preparation and startup](docs/runtime.md) for QCOW2 conversion, software rendering, importing, and signed guest updates. See [validation](docs/validation.md) for actual results and remaining blockers.
+
 ## Release gates
 
 - Verify upstream signing fingerprint, tag signature, exact commit, and submodules.

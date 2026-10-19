@@ -1,0 +1,14 @@
+{
+  "status": "development-only; not a signed binary release",
+  "date": "2026-10-19",
+  "upstream_tag": "18.2.1.9-developers-only",
+  "upstream_commit": "3c25009d615ffd37a3544ddc32b9b507b0650bb6",
+  "signing_fingerprint": "916B8D99C38EAF5E8ADC7A2A8D66066A2EEACCDA",
+  "architecture": "arm64",
+  "target": "utm",
+  "original_archive_sha256": {
+    "Whonix-Gateway-LXQt.utm.tar.gz": "bd3f20c99903f951bfe0df016ba10b749a7d8ae19ac9ca0edb7bcfe5d842d452",
+    "Whonix-Workstation-LXQt.utm.tar.gz": "f4df7c1390628183bf4cc9519a75c2926a16c887906d34022226bb296fb367f2"
+  },
+  "note": "Hashes identify this local build's original archives, not the subsequently modified, booted, or updated runtime disks. No binary images are uploaded by this repository."
+}

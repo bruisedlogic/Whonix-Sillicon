@@ -11,16 +11,23 @@ Source: upstream `18.2.1.9-developers-only`, commit `3c25009d615ffd37a3544ddc32b
 | Top-level upstream tag and commit signatures | Passed |
 | Upstream source/submodule sanity check | Passed, with signature and tag policy enabled |
 | Configuration regression tests | 8 passed |
+| Archive path/link boundary tests | 3 passed |
 | Disposable Gateway and Workstation bundles import into UTM | Passed |
 | Both disposable ARM64 VMs start under UTM hardware virtualization | Passed; booted firmware only |
 | QEMU stream Unix listener in QEMUHelper's private temporary directory | Passed |
 | Workstation stream client connects to that listener | Passed; matched Unix socket endpoint pair in `lsof` |
 | TCP/UDP sockets on those two QEMU processes during transport-only test | None, using `lsof -a -c QEMULauncher -iTCP -iUDP` |
-| Whonix Gateway and Workstation image builds | Pending |
-| Installed guest packages and signed updates | Pending |
-| Tor bootstrap | Pending |
+| Whonix Gateway image build and archive SHA-256 | Passed |
+| Whonix Workstation image build and archive SHA-256 | Passed |
+| Gateway and Workstation graphical cold boot | Passed with a greetd software-rendering override; both normal and sysmaint desktops displayed |
+| Raw runtime disk | Failed: UTM reported `drive0, #block500: Invalid argument` during first boot |
+| QCOW2 replacements | Both `qemu-img check` passed; raw-disk error not reproduced on QCOW2 cold boots |
+| Installed guest protections | Gateway reports AppArmor enabled; whonix-firewall and security-misc packages present; no OpenSSH server or QEMU guest agent installed |
+| Signed package updates through Tor | Both normal updaters reached signed repositories; installation verification in progress |
+| Gateway Tor connection | HTTPS check.torproject.org API returned `IsTor: true` |
+| Warm reboot | One Gateway warm reboot did not recover the desktop or network; cold start reached sysmaint successfully. Unresolved reliability limitation |
 | Stable Tor Browser on Linux ARM64 | Blocked: stable download metadata returned HTTP 404; alpha metadata offered 16.0a14 |
-| Workstation traffic, DNS, IPv6, and fail-closed tests | Pending |
+| Workstation networking | Correct internal-only eth0 address (10.152.152.11/18); signed repository downloads through Tor succeeded after cold-starting the pair. Full egress/failure tests pending |
 | Independent security audit | Not performed |
 
 The transport test used blank disposable disks, not Whonix. Starting firmware and establishing a host socket does not demonstrate guest anonymity, traffic forwarding, or a functioning Workstation. Test VMs were stopped and removed after the check.
