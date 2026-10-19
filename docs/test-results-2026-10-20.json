@@ -1,0 +1,279 @@
+{
+  "date": "2026-10-20",
+  "scope": "Finite ordinary-user network matrix, not an audit",
+  "cases": [
+    {
+      "phase": "tor-running",
+      "probe": "tor_https",
+      "uid": 1000,
+      "result": {
+        "success": true,
+        "is_tor": true
+      }
+    },
+    {
+      "phase": "tor-running",
+      "probe": "tcp4",
+      "uid": 1000,
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "phase": "tor-running",
+      "probe": "system_dns",
+      "uid": 1000,
+      "result": {
+        "success": true,
+        "answer_count": 2
+      }
+    },
+    {
+      "phase": "tor-running",
+      "probe": "dns4",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "PermissionError: [Errno 1] Operation not permitted",
+        "elapsed": 0.0
+      }
+    },
+    {
+      "phase": "tor-running",
+      "probe": "udp4",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "PermissionError: [Errno 1] Operation not permitted",
+        "elapsed": 0.0
+      }
+    },
+    {
+      "phase": "tor-running",
+      "probe": "tcp6",
+      "uid": 1000,
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "phase": "tor-running",
+      "probe": "dns6",
+      "uid": 1000,
+      "result": {
+        "success": true,
+        "reply_bytes": 45,
+        "transaction_matches": true
+      }
+    },
+    {
+      "phase": "tor-running",
+      "probe": "udp6",
+      "uid": 1000,
+      "result": {
+        "sent": true,
+        "reply": false
+      }
+    },
+    {
+      "phase": "tor-stopped",
+      "probe": "tor_https",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "gaierror: [Errno -3] Temporary failure in name resolution",
+        "elapsed": 20.04
+      }
+    },
+    {
+      "phase": "tor-stopped",
+      "probe": "tcp4",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "ConnectionRefusedError: [Errno 111] Connection refused",
+        "elapsed": 0.0
+      }
+    },
+    {
+      "phase": "tor-stopped",
+      "probe": "system_dns",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "gaierror: [Errno -3] Temporary failure in name resolution",
+        "elapsed": 20.04
+      }
+    },
+    {
+      "phase": "tor-stopped",
+      "probe": "dns4",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "PermissionError: [Errno 1] Operation not permitted",
+        "elapsed": 0.0
+      }
+    },
+    {
+      "phase": "tor-stopped",
+      "probe": "udp4",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "PermissionError: [Errno 1] Operation not permitted",
+        "elapsed": 0.0
+      }
+    },
+    {
+      "phase": "tor-stopped",
+      "probe": "tcp6",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "ConnectionRefusedError: [Errno 111] Connection refused",
+        "elapsed": 0.0
+      }
+    },
+    {
+      "phase": "tor-stopped",
+      "probe": "dns6",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "TimeoutError: timed out",
+        "elapsed": 6.01
+      }
+    },
+    {
+      "phase": "tor-stopped",
+      "probe": "udp6",
+      "uid": 1000,
+      "result": {
+        "sent": true,
+        "reply": false
+      }
+    },
+    {
+      "phase": "gateway-off",
+      "probe": "tor_https",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "gaierror: [Errno -3] Temporary failure in name resolution",
+        "elapsed": 18.11
+      }
+    },
+    {
+      "phase": "gateway-off",
+      "probe": "tcp4",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "OSError: [Errno 113] No route to host",
+        "elapsed": 3.07
+      }
+    },
+    {
+      "phase": "gateway-off",
+      "probe": "system_dns",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "gaierror: [Errno -3] Temporary failure in name resolution",
+        "elapsed": 12.27
+      }
+    },
+    {
+      "phase": "gateway-off",
+      "probe": "dns4",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "PermissionError: [Errno 1] Operation not permitted",
+        "elapsed": 0.0
+      }
+    },
+    {
+      "phase": "gateway-off",
+      "probe": "udp4",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "PermissionError: [Errno 1] Operation not permitted",
+        "elapsed": 0.0
+      }
+    },
+    {
+      "phase": "gateway-off",
+      "probe": "tcp6",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "OSError: [Errno 113] No route to host",
+        "elapsed": 3.07
+      }
+    },
+    {
+      "phase": "gateway-off",
+      "probe": "dns6",
+      "uid": 1000,
+      "result": {
+        "success": false,
+        "error": "TimeoutError: timed out",
+        "elapsed": 6.01
+      }
+    },
+    {
+      "phase": "gateway-off",
+      "probe": "udp6",
+      "uid": 1000,
+      "result": {
+        "sent": true,
+        "reply": false
+      }
+    }
+  ],
+  "captures": {
+    "gateway_external": {
+      "file": "matrix-gateway-validation-external.pcap",
+      "packets": 1283,
+      "marker_packets": 0,
+      "counts": {
+        "ipv6_frames": 7,
+        "ip_protocol_58_frames": 7,
+        "other_ethernet_frames": 2,
+        "ipv4_frames": 1274,
+        "tcp_frames": 1274
+      }
+    },
+    "workstation_internal": {
+      "file": "matrix-workstation-validation-internal.pcap",
+      "packets": 788,
+      "marker_packets": 4,
+      "counts": {
+        "ipv6_frames": 87,
+        "ip_protocol_0_frames": 5,
+        "ip_protocol_58_frames": 57,
+        "other_ethernet_frames": 26,
+        "ipv4_frames": 675,
+        "tcp_frames": 653,
+        "probe_destination_frames": 18,
+        "udp_frames": 39,
+        "destination_port_53_frames": 32,
+        "global_ipv6_frames": 12,
+        "ip_protocol_1_frames": 8
+      }
+    }
+  },
+  "reboot_policy": {
+    "gateway": "stopped",
+    "workstation": "stopped",
+    "forced_stop": false
+  },
+  "post_policy_cold_recovery": {
+    "standard_controller": true,
+    "workstation_https_is_tor": true
+  },
+  "apparatus_limit": "Matrix Gateway used discarded GICv2/userspace interrupt-controller trial; standard-controller configuration received separate cold-reboot and HTTPS recovery checks."
+}

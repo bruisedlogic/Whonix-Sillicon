@@ -1,6 +1,6 @@
 # Validation record
 
-Date: 2026-10-19. This is a development record, not a release certification.
+Dates: 2026-10-19 build validation; 2026-10-20 bounded runtime follow-up. This is a development record, not a release certification.
 
 Environment: Apple M2 Pro, 16 GiB RAM, macOS 27.0.1, UTM 5.0.8 (bundled QEMU 10.0), Lima 2.2.1, Debian 13 ARM64 build guest.
 
@@ -10,8 +10,9 @@ Source: upstream `18.2.1.9-developers-only`, commit `3c25009d615ffd37a3544ddc32b
 |---|---|
 | Top-level upstream tag and commit signatures | Passed |
 | Upstream source/submodule sanity check | Passed, with signature and tag policy enabled |
-| Configuration regression tests | 8 passed |
+| Configuration regression tests | 9 passed after reboot-policy change |
 | Archive path/link boundary tests | 3 passed |
+| Capture parser boundary tests | 3 passed; total automated tests: 15 |
 | Disposable Gateway and Workstation bundles import into UTM | Passed |
 | Both disposable ARM64 VMs start under UTM hardware virtualization | Passed; booted firmware only |
 | QEMU stream Unix listener in QEMUHelper's private temporary directory | Passed |
@@ -28,13 +29,16 @@ Source: upstream `18.2.1.9-developers-only`, commit `3c25009d615ffd37a3544ddc32b
 | Installed UTM policy and permissions | Both plists match the hardening transformer; bundle/Data 0700 and QCOW2 disks 0600 |
 | Runtime Internet socket ownership during updates | External TCP connections belonged only to Gateway QEMU; none appeared on Workstation QEMU |
 | Gateway Tor connection | HTTPS check.torproject.org API returned `IsTor: true` |
-| Warm reboot | One Gateway warm reboot did not recover the desktop or network; cold start reached sysmaint successfully. Unresolved reliability limitation |
-| Stable Tor Browser on Linux ARM64 | Blocked: stable download metadata returned HTTP 404; alpha metadata offered 16.0a14 |
+| Warm reboot | Reproduced firmware-stage hang; GICv2/userspace-interrupt-controller trial also hung and was discarded. Underlying defect unresolved |
+| Cold-reboot workaround | `-no-reboot` made one reboot request per guest stop cleanly without force. Standard-controller cold restart restored Workstation HTTPS with `IsTor: true`; manual Start required |
+| Gateway process reconnect | Workstation recovered after Gateway process restart with `reconnect-ms=2000`; subsequent HTTPS used Tor without restarting Workstation |
+| Stable Tor Browser on Linux ARM64 | Still blocked on 2026-10-20: official table lists stable 15.0.25 without ARM64, alpha 16.0a14 with ARM64; stable ARM64 metadata HTTP 404 |
 | Workstation networking | Correct internal-only eth0 address (10.152.152.11/18); signed repository downloads through Tor succeeded after cold-starting the pair |
 | Post-update normal cold boot | Both graphical desktops reached successfully |
 | Workstation Tor HTTPS smoke test | Passed: check.torproject.org API returned `IsTor: true` after signed updates |
 | Gateway-off HTTPS smoke test | The same Workstation curl request failed with exit 6, could not resolve host, after Gateway shutdown; no QEMU Internet sockets appeared in host lsof |
-| Comprehensive leak/failure testing | Pending: direct-IP TCP/UDP, DNS, IPv6, Tor-service failure, and adversarial tests are not established by the HTTPS smoke checks |
+| Bounded ordinary-user leak/failure matrix | 24 cases completed across Tor-running, Tor-stopped and Gateway-off conditions. External capture: no UDP, port-53 destination, direct probe destination or canary payload. See [method and limits](network-validation.md) |
+| Adversarial, privileged Workstation and browser leak tests | Not performed; no stable ARM64 browser is installed |
 | Independent security audit | Not performed |
 
 The transport test used blank disposable disks, not Whonix. Starting firmware and establishing a host socket does not demonstrate guest anonymity, traffic forwarding, or a functioning Workstation. Test VMs were stopped and removed after the check.
@@ -48,3 +52,7 @@ The transport test used blank disposable disks, not Whonix. Starting firmware an
 ## Transport finding
 
 The proposed Unix socket under `/private/tmp` did not appear while the UTM VM ran. The same backend created a socket using standalone Homebrew QEMU. Moving the socket into QEMUHelper's existing mode-0700 temporary directory worked in UTM, consistent with a sandbox path restriction. No sandbox entitlement or macOS protection was disabled.
+
+## 2026-10-20 follow-up
+
+The [network report](network-validation.md) and [sanitized results](test-results-2026-10-20.json) record the bounded matrix, test apparatus and its controller-setting limitation. Test controllers, serial channels and packet-capture objects were confined to disposable disk copies. The installed pair was restored from its pre-test updated disks, both QCOW2 integrity checks passed, and the final hardener was applied with no diagnostic channel. Local credentials remain upstream defaults. No raw captures or used disks were published.

@@ -32,7 +32,7 @@ class IsolationTests(unittest.TestCase):
         self.assertEqual(args.count("-netdev"), 1)
         self.assertEqual(c["Network"], [])
         self.assertFalse(any("user," in a or "bypass" in a or "tap," in a for a in args))
-        self.assertIn("stream,id=internal,addr.type=unix,addr.path=/tmp/test-private/net.sock,server=off", args)
+        self.assertIn("stream,id=internal,addr.type=unix,addr.path=/tmp/test-private/net.sock,server=off,reconnect-ms=2000", args)
 
     def test_gateway_has_one_external_and_private_internal_transport(self):
         c = harden.hardened(fixture(), "gateway", "/tmp/test-private/net.sock")
@@ -53,6 +53,11 @@ class IsolationTests(unittest.TestCase):
         self.assertEqual(c["Serial"], [])
         self.assertEqual(c["Display"][0]["Hardware"], "virtio-gpu-pci")
         self.assertTrue(original["Sharing"]["ClipboardSharing"])
+
+    def test_guest_reboot_uses_clean_exit_in_both_roles(self):
+        for role in ("gateway", "workstation"):
+            c = harden.hardened(fixture(), role, "/tmp/private/net.sock")
+            self.assertEqual(c["QEMU"]["AdditionalArguments"].count("-no-reboot"), 1)
 
     def test_rejects_qemu_separator_injection_and_relative_socket(self):
         for path in ("relative.sock", "/tmp/sock,server=on", "/tmp/a b.sock", "/" + "a" * 100):

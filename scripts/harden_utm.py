@@ -53,7 +53,11 @@ def hardened(config, role, socket_path):
                  "-netdev", internal + ",server=on"]
     else:
         args += ["-device", "virtio-net-pci,netdev=internal,mac=02:00:00:00:02:01",
-                 "-netdev", internal + ",server=off"]
+                 "-netdev", internal + ",server=off,reconnect-ms=2000"]
+    # UTM/EDK2 warm reset hung in the validated ARM64 environment. A guest
+    # reboot must exit QEMU cleanly; the user then starts a fresh process.
+    # This is an explicit cold-start workaround, not a firmware bug fix.
+    args += ["-no-reboot"]
     # Replace every custom argument; do not retain an old alternate network path.
     c["QEMU"] = {"AdditionalArguments": args, "BalloonDevice": False,
                  "DebugLog": False, "Hypervisor": True, "PS2Controller": False,

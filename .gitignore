@@ -4,6 +4,12 @@
 *.utm/
 *.tar.gz
 *.log
+*.pcap
+*.pcapng
+*.jsonl
+*.sav
+*.vmstate
+efi_vars.fd
 __pycache__/
 .DS_Store
 build/
