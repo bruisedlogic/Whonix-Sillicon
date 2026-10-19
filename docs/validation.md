@@ -9,7 +9,8 @@ Source: upstream `18.2.1.9-developers-only`, commit `3c25009d615ffd37a3544ddc32b
 | Check | Result |
 |---|---|
 | Top-level upstream tag and commit signatures | Passed |
-| Configuration regression tests | 5 passed |
+| Upstream source/submodule sanity check | Passed, with signature and tag policy enabled |
+| Configuration regression tests | 7 passed |
 | Disposable Gateway and Workstation bundles import into UTM | Passed |
 | Both disposable ARM64 VMs start under UTM hardware virtualization | Passed; booted firmware only |
 | QEMU stream Unix listener in QEMUHelper's private temporary directory | Passed |
@@ -17,7 +18,8 @@ Source: upstream `18.2.1.9-developers-only`, commit `3c25009d615ffd37a3544ddc32b
 | TCP/UDP sockets on those two QEMU processes during transport-only test | None, using `lsof -a -c QEMULauncher -iTCP -iUDP` |
 | Whonix Gateway and Workstation image builds | Pending |
 | Installed guest packages and signed updates | Pending |
-| Tor bootstrap and Tor Browser on ARM64 | Pending |
+| Tor bootstrap | Pending |
+| Stable Tor Browser on Linux ARM64 | Blocked: stable download metadata returned HTTP 404; alpha metadata offered 16.0a14 |
 | Workstation traffic, DNS, IPv6, and fail-closed tests | Pending |
 | Independent security audit | Not performed |
 

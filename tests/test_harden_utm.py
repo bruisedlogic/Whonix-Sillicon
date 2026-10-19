@@ -1,5 +1,10 @@
 import importlib.util
+import os
 from pathlib import Path
+import plistlib
+import subprocess
+import sys
+import tempfile
 import unittest
 
 spec = importlib.util.spec_from_file_location(
@@ -63,6 +68,31 @@ class IsolationTests(unittest.TestCase):
         c["Drive"].append({"ImageName": "host.raw", "ImageType": "Disk"})
         with self.assertRaises(ValueError):
             harden.hardened(c, "gateway", "/tmp/net.sock")
+
+    def test_write_rejects_public_socket_directory(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            bundle = root / "test.utm"
+            (bundle / "Data").mkdir(parents=True)
+            (bundle / "Data/disk.raw").touch()
+            original = plistlib.dumps(fixture())
+            (bundle / "config.plist").write_bytes(original)
+            socket_dir = root / "public"
+            socket_dir.mkdir(mode=0o755)
+            os.chmod(socket_dir, 0o755)
+            result = subprocess.run([sys.executable, str(Path(harden.__file__)), str(bundle),
+                                     "--role", "gateway", "--socket", str(socket_dir / "net.sock"),
+                                     "--write"], capture_output=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual((bundle / "config.plist").read_bytes(), original)
+            self.assertFalse((bundle / "config.before-hardening.plist").exists())
+
+    def test_drive_external_metadata_is_not_preserved(self):
+        c = fixture()
+        c["Drive"][0].update(IsExternal=True, Bookmark="untrusted external disk")
+        result = harden.hardened(c, "gateway", "/tmp/private/net.sock")
+        self.assertNotIn("Bookmark", result["Drive"][0])
+        self.assertNotIn("IsExternal", result["Drive"][0])
 
 
 if __name__ == "__main__":

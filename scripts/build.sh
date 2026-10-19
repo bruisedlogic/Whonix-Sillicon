@@ -63,8 +63,10 @@ git submodule foreach --recursive '
 # The upstream script may request further dependencies or sudo access.
 for flavor in whonix-gateway-lxqt whonix-workstation-lxqt; do
     if [[ $flavor == whonix-gateway-lxqt ]]; then size=15G; else size=25G; fi
-    ./derivative-maker --flavor "$flavor" --target utm --arch arm64 \
-        --tb open --repo true --vmsize "$size"
+    # Upstream creates system configuration consumed by the unprivileged
+    # approx service. Its directories/files need standard readable modes.
+    (umask 022; ./derivative-maker --flavor "$flavor" --target utm --arch arm64 \
+        --tb open --repo true --vmsize "$size")
 done
 
 echo 'Build completed. Images remain experimental until runtime release gates pass.'

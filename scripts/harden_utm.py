@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import plistlib
 import re
+import stat
 import tempfile
 import uuid
 
@@ -32,6 +33,8 @@ def hardened(config, role, socket_path):
     name = drives[0].get("ImageName", "")
     if not name or Path(name).name != name or name in (".", ".."):
         raise ValueError("Disk must be local to the bundle's Data directory")
+    c["Drive"] = [{"Identifier": "0", "ImageName": name, "ImageType": "Disk",
+                   "Interface": "VirtIO", "InterfaceVersion": 0, "ReadOnly": False}]
     c["Sharing"] = {"ClipboardSharing": False, "DirectoryShareMode": "None",
                     "DirectoryShareReadOnly": True}
     c["Input"] = {"MaximumUsbShare": 0, "UsbBusSupport": "3.0", "UsbSharing": False}
@@ -75,6 +78,8 @@ def main():
     path = bundle / "config.plist"
     if path.is_symlink():
         raise SystemExit("Refusing symlinked configuration")
+    if (bundle / "Data").is_symlink():
+        raise SystemExit("Refusing a symlinked Data directory")
     # UTM keeps a suspended memory state under Data; never edit such a bundle.
     if any((bundle / "Data").glob("*.sav")) or any((bundle / "Data").glob("*.vmstate")):
         raise SystemExit("Discard suspended state and fully shut down the VM first")
@@ -87,6 +92,10 @@ def main():
     if not args.write:
         print(result.decode(), end="")
         return
+    parent = Path(args.socket).parent
+    info = parent.lstat()
+    if not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) != 0o700:
+        raise SystemExit("Socket parent must be a real owner-only directory with mode 0700")
     backup = bundle / "config.before-hardening.plist"
     if not backup.exists():
         with backup.open("xb") as f:

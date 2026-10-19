@@ -4,6 +4,8 @@ Independent work toward a hardened Whonix Gateway/Workstation pair for UTM on Ap
 
 **Status: experimental, not a release.** Upstream does not support Apple Silicon and describes its UTM target as unmaintained. This repository cannot change that support status. No security audit or production-readiness claim is made. Do not use an unvalidated image for sensitive activity.
 
+There is an additional browser blocker: on 2026-10-19, Tor's stable Linux ARM64 download metadata returned HTTP 404, while the alpha channel offered `16.0a14`. This project does not silently substitute an alpha browser or ordinary Firefox for stable Tor Browser. A successful image build alone therefore does not establish a complete browsing environment.
+
 The spelling of this repository name is intentional. This project is not affiliated with or endorsed by Whonix, Kicksecure, or UTM.
 
 ## Design
