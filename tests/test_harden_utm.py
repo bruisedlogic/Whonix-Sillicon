@@ -1,0 +1,69 @@
+import importlib.util
+from pathlib import Path
+import unittest
+
+spec = importlib.util.spec_from_file_location(
+    "harden", Path(__file__).resolve().parents[1] / "scripts/harden_utm.py")
+harden = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(harden)
+
+
+def fixture():
+    return {"Backend": "QEMU", "ConfigurationVersion": 4,
+            "System": {"Architecture": "aarch64"}, "Information": {},
+            "Drive": [{"ImageName": "disk.raw", "ImageType": "Disk"}],
+            "Display": [{"Hardware": "virtio-gpu-gl-pci"}],
+            "Network": [{"Mode": "Shared"}],
+            "QEMU": {"AdditionalArguments": ["-netdev user,id=bypass"]},
+            "Sharing": {"ClipboardSharing": True, "DirectoryShareMode": "WebDAV"},
+            "Input": {"UsbSharing": True}, "Sound": [{"Hardware": "intel-hda"}]}
+
+
+class IsolationTests(unittest.TestCase):
+    def test_workstation_has_no_external_or_alternate_network(self):
+        c = harden.hardened(fixture(), "workstation", "/tmp/test-private/net.sock")
+        args = c["QEMU"]["AdditionalArguments"]
+        self.assertEqual(args.count("-device"), 1)
+        self.assertEqual(args.count("-netdev"), 1)
+        self.assertEqual(c["Network"], [])
+        self.assertFalse(any("user," in a or "bypass" in a or "tap," in a for a in args))
+        self.assertIn("stream,id=internal,addr.type=unix,addr.path=/tmp/test-private/net.sock,server=off", args)
+
+    def test_gateway_has_one_external_and_private_internal_transport(self):
+        c = harden.hardened(fixture(), "gateway", "/tmp/test-private/net.sock")
+        args = c["QEMU"]["AdditionalArguments"]
+        self.assertEqual(args.count("-device"), 2)
+        self.assertEqual(args.count("-netdev"), 2)
+        self.assertIn("user,id=external,ipv6=off,net=10.0.2.0/24", args)
+        self.assertIn("stream,id=internal,addr.type=unix,addr.path=/tmp/test-private/net.sock,server=on", args)
+        self.assertFalse(any("listen=" in a or "hostfwd" in a for a in args))
+
+    def test_host_integrations_removed_and_input_not_mutated(self):
+        original = fixture()
+        c = harden.hardened(original, "workstation", "/tmp/private/net.sock")
+        self.assertFalse(c["Sharing"]["ClipboardSharing"])
+        self.assertEqual(c["Sharing"]["DirectoryShareMode"], "None")
+        self.assertFalse(c["Input"]["UsbSharing"])
+        self.assertEqual(c["Sound"], [])
+        self.assertEqual(c["Serial"], [])
+        self.assertEqual(c["Display"][0]["Hardware"], "virtio-gpu-pci")
+        self.assertTrue(original["Sharing"]["ClipboardSharing"])
+
+    def test_rejects_qemu_separator_injection_and_relative_socket(self):
+        for path in ("relative.sock", "/tmp/sock,server=on", "/tmp/a b.sock", "/" + "a" * 100):
+            with self.assertRaises(ValueError):
+                harden.hardened(fixture(), "gateway", path)
+
+    def test_rejects_unknown_architecture_or_extra_disk(self):
+        c = fixture()
+        c["System"]["Architecture"] = "x86_64"
+        with self.assertRaises(ValueError):
+            harden.hardened(c, "gateway", "/tmp/net.sock")
+        c = fixture()
+        c["Drive"].append({"ImageName": "host.raw", "ImageType": "Disk"})
+        with self.assertRaises(ValueError):
+            harden.hardened(c, "gateway", "/tmp/net.sock")
+
+
+if __name__ == "__main__":
+    unittest.main()
