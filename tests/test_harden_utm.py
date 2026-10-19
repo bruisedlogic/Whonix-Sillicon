@@ -94,12 +94,17 @@ class IsolationTests(unittest.TestCase):
             bundle = root / "test.utm"
             (bundle / "Data").mkdir(parents=True)
             (bundle / "Data/disk.raw").touch()
-            original = plistlib.dumps(fixture())
+            config = fixture()
+            config["Information"]["UUID"] = "2C279BF0-E968-4EF1-B93E-61BABD03A7B7"
+            original = plistlib.dumps(config)
             (bundle / "config.plist").write_bytes(original)
             command = [sys.executable, str(Path(harden.__file__)), str(bundle),
                        "--role", "gateway", "--socket", str(root / "net.sock"), "--write"]
             subprocess.run(command, check=True, capture_output=True)
+            first_identity = plistlib.loads((bundle / "config.plist").read_bytes())["Information"]["UUID"]
+            self.assertNotEqual(first_identity, config["Information"]["UUID"])
             subprocess.run(command, check=True, capture_output=True)
+            self.assertEqual(plistlib.loads((bundle / "config.plist").read_bytes())["Information"]["UUID"], first_identity)
             self.assertEqual((bundle / "config.before-hardening.plist").read_bytes(), original)
             for path, mode in [(bundle, 0o700), (bundle / "Data", 0o700),
                                (bundle / "config.plist", 0o600), (bundle / "Data/disk.raw", 0o600)]:

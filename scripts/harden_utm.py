@@ -62,8 +62,13 @@ def hardened(config, role, socket_path):
     c["System"].update(CPUCount=2 if role == "gateway" else 4,
                         MemorySize=2048 if role == "gateway" else 4096,
                         Target="virt", CPU="default")
-    # Preserve image identity across repeated hardening runs.
-    c["Information"].setdefault("UUID", str(uuid.uuid4()).upper())
+    # Upstream templates reuse two fixed UUIDs. Allocate a local VM identity
+    # on first hardening, then preserve it across repeated runs.
+    prototypes = {"2C279BF0-E968-4EF1-B93E-61BABD03A7B7",
+                  "4EEAAA33-F158-42C4-A0A0-9959BC6C894E"}
+    identity = c["Information"].get("UUID", "")
+    if not identity or identity.upper() in prototypes:
+        c["Information"]["UUID"] = str(uuid.uuid4()).upper()
     return c
 
 
