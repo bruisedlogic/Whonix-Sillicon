@@ -6,6 +6,9 @@ readonly TAG=18.2.1.9-developers-only
 readonly COMMIT=3c25009d615ffd37a3544ddc32b9b507b0650bb6
 readonly FINGERPRINT=916B8D99C38EAF5E8ADC7A2A8D66066A2EEACCDA
 
+# Lima and some other builders use homes other than /home/<username>.
+export HOMEVAR="$HOME"
+
 [[ $(uname -s) == Linux && $(uname -m) == aarch64 && $EUID -ne 0 ]] || {
     echo 'Run as an ordinary user inside a disposable Debian 13 ARM64 VM.' >&2
     exit 1
@@ -15,7 +18,8 @@ readonly FINGERPRINT=916B8D99C38EAF5E8ADC7A2A8D66066A2EEACCDA
 
 sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git time curl approx \
-    lsb-release fakeroot dpkg-dev fasttrack-archive-keyring safe-rm gnupg
+    lsb-release fakeroot dpkg-dev fasttrack-archive-keyring safe-rm gnupg \
+    sq sqop sequoia-git
 
 keydir=$(mktemp -d)
 trap 'rm -rf -- "$keydir"' EXIT
@@ -38,6 +42,22 @@ GNUPGHOME="$keydir" git verify-commit "$COMMIT"
 git checkout --detach "$COMMIT"
 [[ -z $(git status --porcelain) ]] || { echo 'Source checkout is modified.' >&2; exit 1; }
 git submodule update --init --recursive --depth=1 --jobs=4
+# A shallow checkout can omit the tag on a pinned submodule commit. Fetch that
+# matching tag rather than relaxing upstream's signed-tag policy.
+git submodule foreach --recursive '
+    if test -z "$(git tag --points-at HEAD)"; then
+        revision=$(git rev-parse HEAD)
+        ref=$(git ls-remote --tags origin | awk -v revision="$revision" '\''
+            $1 == revision {
+                if (sub(/\^\{\}$/, "", $2)) {print $2; found=1; exit}
+                fallback=$2
+            }
+            END {if (!found && fallback != "") print fallback}
+        '\'')
+        test -n "$ref" || { echo "No tag found for $displaypath at $revision" >&2; exit 1; }
+        git fetch --depth=1 origin "$ref:$ref"
+    fi
+'
 
 # Keep the upstream sanity and package-signature checks enabled.
 # The upstream script may request further dependencies or sudo access.

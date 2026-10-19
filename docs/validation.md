@@ -1,0 +1,34 @@
+# Validation record
+
+Date: 2026-10-19. This is a development record, not a release certification.
+
+Environment: Apple M2 Pro, 16 GiB RAM, macOS 27.0.1, UTM 5.0.8 (bundled QEMU 10.0), Lima 2.2.1, Debian 13 ARM64 build guest.
+
+Source: upstream `18.2.1.9-developers-only`, commit `3c25009d615ffd37a3544ddc32b9b507b0650bb6`. The tag and commit verified with signing key fingerprint `916B8D99C38EAF5E8ADC7A2A8D66066A2EEACCDA` obtained from the official Whonix website and compared against its published fingerprint. This relies on the website/TLS trust path; no separate out-of-band identity ceremony was performed.
+
+| Check | Result |
+|---|---|
+| Top-level upstream tag and commit signatures | Passed |
+| Configuration regression tests | 5 passed |
+| Disposable Gateway and Workstation bundles import into UTM | Passed |
+| Both disposable ARM64 VMs start under UTM hardware virtualization | Passed; booted firmware only |
+| QEMU stream Unix listener in QEMUHelper's private temporary directory | Passed |
+| Workstation stream client connects to that listener | Passed; matched Unix socket endpoint pair in `lsof` |
+| TCP/UDP sockets on those two QEMU processes during transport-only test | None, using `lsof -a -c QEMULauncher -iTCP -iUDP` |
+| Whonix Gateway and Workstation image builds | Pending |
+| Installed guest packages and signed updates | Pending |
+| Tor bootstrap and Tor Browser on ARM64 | Pending |
+| Workstation traffic, DNS, IPv6, and fail-closed tests | Pending |
+| Independent security audit | Not performed |
+
+The transport test used blank disposable disks, not Whonix. Starting firmware and establishing a host socket does not demonstrate guest anonymity, traffic forwarding, or a functioning Workstation. Test VMs were stopped and removed after the check.
+
+## Findings resolved in the build wrapper
+
+- Explicitly set `HOMEVAR` to the builder user's real home directory; upstream otherwise assumes `/home/<username>`, which differs from Lima's home directory.
+- Install `sq`, `sqop`, and `sequoia-git` before the upstream initial sanity check.
+- Fetch missing tags for the exact pinned submodule commits. Keep the upstream signature and tag checks enabled.
+
+## Transport finding
+
+The proposed Unix socket under `/private/tmp` did not appear while the UTM VM ran. The same backend created a socket using standalone Homebrew QEMU. Moving the socket into QEMUHelper's existing mode-0700 temporary directory worked in UTM, consistent with a sandbox path restriction. No sandbox entitlement or macOS protection was disabled.
