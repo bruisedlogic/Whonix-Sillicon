@@ -22,4 +22,4 @@ SOFTWARE.
 
 This license covers this repository's original integration scripts and
 documentation only. Whonix, Kicksecure, Debian, UTM, QEMU, and bundled software
-retain their respective licenses. Release assets contain upstream components under their own licenses; see SOURCES.md. No upstream image or source code is included in this integration source tree.
+retain their respective licenses. Release assets contain upstream components under their own licenses; see releases/v0.1.0-preview.1/SOURCES.md. No upstream image or source code is included in this integration source tree.
