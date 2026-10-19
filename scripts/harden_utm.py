@@ -96,6 +96,12 @@ def main():
     info = parent.lstat()
     if not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) != 0o700:
         raise SystemExit("Socket parent must be a real owner-only directory with mode 0700")
+    for owned in (bundle, bundle / "Data", disk, path):
+        if owned.stat().st_uid != os.getuid():
+            raise SystemExit("Bundle, Data directory, disk and configuration must be owned by you")
+    os.chmod(bundle, 0o700)
+    os.chmod(bundle / "Data", 0o700)
+    os.chmod(disk, 0o600)
     backup = bundle / "config.before-hardening.plist"
     if not backup.exists():
         with backup.open("xb") as f:

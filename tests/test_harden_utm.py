@@ -70,7 +70,7 @@ class IsolationTests(unittest.TestCase):
             harden.hardened(c, "gateway", "/tmp/net.sock")
 
     def test_write_rejects_public_socket_directory(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with tempfile.TemporaryDirectory(dir="/tmp", prefix="whonix-test-") as temp:
             root = Path(temp)
             bundle = root / "test.utm"
             (bundle / "Data").mkdir(parents=True)
@@ -84,8 +84,26 @@ class IsolationTests(unittest.TestCase):
                                      "--role", "gateway", "--socket", str(socket_dir / "net.sock"),
                                      "--write"], capture_output=True)
             self.assertNotEqual(result.returncode, 0)
+            self.assertIn(b"mode 0700", result.stderr)
             self.assertEqual((bundle / "config.plist").read_bytes(), original)
             self.assertFalse((bundle / "config.before-hardening.plist").exists())
+
+    def test_write_sets_private_modes_and_keeps_original_backup(self):
+        with tempfile.TemporaryDirectory(dir="/tmp", prefix="whonix-test-") as temp:
+            root = Path(temp)
+            bundle = root / "test.utm"
+            (bundle / "Data").mkdir(parents=True)
+            (bundle / "Data/disk.raw").touch()
+            original = plistlib.dumps(fixture())
+            (bundle / "config.plist").write_bytes(original)
+            command = [sys.executable, str(Path(harden.__file__)), str(bundle),
+                       "--role", "gateway", "--socket", str(root / "net.sock"), "--write"]
+            subprocess.run(command, check=True, capture_output=True)
+            subprocess.run(command, check=True, capture_output=True)
+            self.assertEqual((bundle / "config.before-hardening.plist").read_bytes(), original)
+            for path, mode in [(bundle, 0o700), (bundle / "Data", 0o700),
+                               (bundle / "config.plist", 0o600), (bundle / "Data/disk.raw", 0o600)]:
+                self.assertEqual(path.stat().st_mode & 0o777, mode)
 
     def test_drive_external_metadata_is_not_preserved(self):
         c = fixture()

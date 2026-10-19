@@ -10,7 +10,7 @@ Source: upstream `18.2.1.9-developers-only`, commit `3c25009d615ffd37a3544ddc32b
 |---|---|
 | Top-level upstream tag and commit signatures | Passed |
 | Upstream source/submodule sanity check | Passed, with signature and tag policy enabled |
-| Configuration regression tests | 7 passed |
+| Configuration regression tests | 8 passed |
 | Disposable Gateway and Workstation bundles import into UTM | Passed |
 | Both disposable ARM64 VMs start under UTM hardware virtualization | Passed; booted firmware only |
 | QEMU stream Unix listener in QEMUHelper's private temporary directory | Passed |
