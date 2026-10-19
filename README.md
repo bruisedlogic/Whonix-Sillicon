@@ -20,6 +20,16 @@ The intended runtime configuration disables clipboard and directory sharing, USB
 
 See `scripts/build.sh`. Run inside a clean Debian 13 ARM64 VM as an ordinary user with sudo access. The builder must have at least 4 GiB RAM and approximately 65 GiB free disk capacity. Build dependencies and upstream scripts install software inside the builder. They must never run directly on macOS.
 
+For a fresh builder on macOS with Lima already installed:
+
+```sh
+limactl start --name=whonix-builder --yes builder/debian-arm64.yaml
+limactl shell whonix-builder -- bash -c 'cat > "$HOME/build-whonix.sh"' < scripts/build.sh
+limactl shell whonix-builder -- bash -lc 'bash "$HOME/build-whonix.sh"'
+```
+
+The supplied Lima configuration has no host mounts, SSH agent forwarding, container runtime, or automatic guest-service port forwarding. Its dated Debian image and SHA-512 digest are pinned. The image URL may eventually be retired; update the URL and independently verified digest together. The builder has direct network access for downloads and is separate from the Whonix runtime VMs.
+
 ## Release gates
 
 - Verify upstream signing fingerprint, tag signature, exact commit, and submodules.
