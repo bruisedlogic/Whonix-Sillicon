@@ -1,0 +1,50 @@
+{
+  "tag": "v0.1.0-preview.1",
+  "status": "UNOFFICIAL DEVELOPMENT PREVIEW - NOT AUDITED OR UPSTREAM SUPPORTED",
+  "date": "2026-10-20",
+  "upstream_tag": "18.2.1.9-developers-only",
+  "upstream_commit": "3c25009d615ffd37a3544ddc32b9b507b0650bb6",
+  "upstream_signing_fingerprint": "916B8D99C38EAF5E8ADC7A2A8D66066A2EEACCDA",
+  "browser": {
+    "version": "16.0a14",
+    "channel": "alpha",
+    "architecture": "linux-aarch64",
+    "signing_fingerprint": "EF6E286DDA85EA2A4BA7DE684E2C6E8793298290",
+    "signature_verified": true,
+    "download": "https://dist.torproject.org/torbrowser/16.0a14/tor-browser-linux-aarch64-16.0a14.tar.xz"
+  },
+  "images": [
+    {
+      "role": "gateway",
+      "bundle": "Whonix-Gateway-LXQt.utm",
+      "archive": "Whonix-Sillicon-Gateway-arm64-v0.1.0-preview.1.utm.tar.gz",
+      "sha256": "bfedb007dcd445987e2e85cb2acc233312b7235e7edfe1e79a008150fa076606",
+      "disk_sha256": "566318dda1ed36c1ccfd4904586060ec62d36ce395c3cddff0f7a54883e23e67",
+      "archive_bytes": 1049618217
+    },
+    {
+      "role": "workstation",
+      "bundle": "Whonix-Workstation-LXQt.utm",
+      "archive": "Whonix-Sillicon-Workstation-arm64-v0.1.0-preview.1.utm.tar.gz",
+      "sha256": "7d75a535b8ee9c91fc80868ba3f456e8e053074c31f36c8a0dbd5bb8772041e9",
+      "disk_sha256": "6555490cbc1d68362396753e023f8b4b696070e8e6aa15c68f1f8bfcb284ef49",
+      "archive_bytes": 1397308302
+    }
+  ],
+  "sanitization": [
+    "Fresh original build copies; never-booted release masters",
+    "Signed stable repository updates: Gateway 7 packages, Workstation 6 packages",
+    "Empty machine-id, D-Bus machine-id symlink; no random-seed, SSH host keys or Tor state",
+    "No user homes, journals, browser history, NVRAM, test services, diagnostic channels or host paths",
+    "Software rendering, read-only publisher cache of verified alpha browser; Whonix launcher preserved",
+    "Unused filesystem blocks zeroed; QCOW2 checked; archives contain only config.plist and Data/system.qcow2"
+  ],
+  "setup": "Run setup kit before importing; allocates unique pair socket and UTM UUIDs",
+  "reboot": "Guest reboot powers off; manually Start again",
+  "checksum_authentication": "Unsigned SHA-256 integrity checks; trust repository/HTTPS. Upstream signatures do not authenticate modified VM images.",
+  "known_failures": [
+    "ARM64 kloak seccomp crash; keystroke timing protection unavailable; guest input can drop keystrokes",
+    "Manual cold-start workaround; warm reset unresolved",
+    "Official Tor Browser alpha, not stable; no independent sandbox/fingerprinting audit"
+  ]
+}

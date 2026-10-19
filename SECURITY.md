@@ -4,7 +4,9 @@
 
 This repository is a development integration, not an upstream-supported Apple Silicon port, audited anonymity system or stable browsing image. No production-supported release exists. Do not use the development images for sensitive activity.
 
-A stable Linux ARM64 Tor Browser was absent from Tor's official release table checked on 2026-10-20. No alpha or ordinary browser was installed as a substitute. A bounded network test cannot establish browser fingerprinting resistance, sandbox strength or browser update safety.
+A stable Linux ARM64 Tor Browser was absent from Tor's official release table checked on 2026-10-20. The preview explicitly bundles official 16.0a14 ARM64 **alpha**, verified against the Tor Browser Developers key. It is not stable, and this project has not audited its ARM64 fingerprinting or sandbox parity. A bounded network test cannot establish browser fingerprinting resistance, sandbox strength or browser update safety.
+
+**Known ARM64 failure:** upstream `kloak` repeatedly exits under its seccomp policy (syscall 48 observed). Keystroke-timing camouflage is unavailable; input can drop keystrokes. Its protection must not be claimed; no sandbox policy was weakened to make it run.
 
 ## Threat boundary
 
@@ -24,7 +26,7 @@ Warm reset hung in the tested UTM/firmware environment. `-no-reboot` makes a gue
 
 ## Non-negotiable configuration
 
-Keep source/repository signature verification enabled. Do not add a Workstation NAT/bridged interface, host shares, SSH server or a persistent diagnostic agent to obtain connectivity. Do not disable the Whonix firewall or remove user/sysmaint separation. A failed security check blocks image release.
+Keep source/repository signature verification enabled. Do not add a Workstation NAT/bridged interface, host shares, SSH server or a persistent diagnostic agent to obtain connectivity. Do not disable the Whonix firewall or remove user/sysmaint separation. Unresolved checks block stable/support claims. Known preview failures must be stated prominently; a release must never claim they passed.
 
 Diagnostic controllers, serial channels and packet-capture devices used on disposable test copies must be removed before any image is distributed. Never publish raw packet captures, Tor state, guest journals, host paths, personal accounts, GitHub tokens, builder SSH keys or used test disks as release assets. The sanitized report intentionally omits exit and relay addresses.
 

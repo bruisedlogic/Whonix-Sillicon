@@ -2,7 +2,7 @@
 
 Build and isolation tooling for a Whonix Gateway/Workstation pair in UTM on Apple Silicon. Builds use pinned, signature-verified upstream source and retain Whonix's firewall, AppArmor, signed updates and user/sysmaint separation.
 
-**Development preview — not a supported Whonix port or a production browsing image.** Apple Silicon/UTM is unsupported upstream. Stable Linux ARM64 Tor Browser is still unavailable in the official download table checked on 2026-10-20. The project does not replace it with alpha Tor Browser or ordinary Firefox and call the result stable.
+**Development preview — not a supported Whonix port or a production browsing image.** Apple Silicon/UTM is unsupported upstream. Stable Linux ARM64 Tor Browser is still unavailable in the official download table checked on 2026-10-20. The downloadable preview explicitly includes official **Tor Browser 16.0a14 ARM64 alpha**, verified with the Tor Browser Developers signing key. Alpha is not stable. **Kloak currently crashes under ARM64 seccomp; keystroke timing protection is unavailable; input can drop keystrokes.**
 
 ## Current results
 
@@ -13,10 +13,17 @@ Build and isolation tooling for a Whonix Gateway/Workstation pair in UTM on Appl
 | Network validation | One bounded 24-case matrix: IPv4/IPv6 TCP, DNS, UDP and HTTPS with Tor running, Tor stopped and Gateway off; see the [test report](docs/network-validation.md) |
 | Gateway process restart | Workstation reconnects to the same private Unix socket; HTTPS recovered without restarting Workstation |
 | Guest reboot | Uses a **manual cold-start workaround**, described below; the underlying warm-reset hang remains unresolved |
-| Stable ARM64 Tor Browser | Blocked by official release availability; no browser installed |
-| Security audit / release images | No audit; no distributable binary release |
+| Tor Browser | Official ARM64 **16.0a14 alpha** included; stable ARM64 unavailable |
+| Security audit / release images | No audit; [development prerelease](https://github.com/bruisedlogic/Whonix-Sillicon/releases/tag/v0.1.0-preview.1) |
+| Keystroke timing protection | Upstream `kloak` crashes on ARM64; unavailable |
 
 See the [validation record](docs/validation.md) for exact scope, failures and limitations. Finite tests provide evidence for this setup, not proof of complete leak resistance.
+
+## Download and setup
+
+Use the [prerelease setup instructions](releases/v0.1.0-preview.1/SETUP.md). Download both VM archives, the setup kit and checksums from the same release. Run the setup script **before importing** the bundles into UTM: it verifies image hashes and allocates a private socket and new UTM identities. Do not import archive templates directly.
+
+Applications are inside the **Workstation USER session**. SYSMAINT is for administration. See [where to find the apps](docs/applications.md).
 
 ## Isolation
 
@@ -46,9 +53,9 @@ Builds pin `18.2.1.9-developers-only` and its exact commit, matching the upstrea
 
 ## Publication
 
-This repository publishes original integration source and documented development results. It does not redistribute or certify Whonix images. The local test disks contain machine-specific state and must not be uploaded as release assets.
+This independent project distributes unofficial, never-booted preview masters with package/license inventories and corresponding-source directions. Used local test disks are never release assets. Upstream signatures authenticate the original source/browser, not these modified images; published image checksums are unsigned.
 
-The [release checklist](docs/release.md) distinguishes source publication from a usable image release. The stable browser and warm-reset limitations remain prominent release blockers. The project is independent of Whonix, Kicksecure, UTM and the Tor Project. The repository spelling is intentional.
+The [release checklist](docs/release.md) distinguishes source publication from a usable image release. The alpha browser, unavailable keystroke protection, manual cold reboot and lack of audit remain prominent limitations; none is a claim of stable support. The project is independent of Whonix, Kicksecure, UTM and the Tor Project. The repository spelling is intentional.
 
 ## Documentation
 
