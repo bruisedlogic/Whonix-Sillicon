@@ -1,0 +1,10 @@
+*.raw
+*.qcow2
+*.iso
+*.utm/
+*.tar.gz
+*.log
+__pycache__/
+.DS_Store
+build/
+private/
